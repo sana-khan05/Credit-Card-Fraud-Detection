@@ -1,0 +1,19 @@
+credit-card-fraud-detection/
+│
+├── data/                 # Dataset
+│   └── creditcard.csv
+│
+├── notebooks/            # Jupyter notebooks
+│   └── EDA.ipynb
+│
+├── src/                  # Python scripts
+│   └── preprocessing.py
+│   └── model.py
+│
+├── outputs/              # Figures, charts
+│   └── correlation_heatmap.png
+│   └── class_distribution.png
+│
+├── presentation.pptx     # PowerPoint presentation
+├── requirements.txt      # Project dependencies
+└── README.md             # Project overview
