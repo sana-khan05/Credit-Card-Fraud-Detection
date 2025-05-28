@@ -1,0 +1,48 @@
+import pandas as pd
+
+def load_data(filepath):
+    """Load the dataset from a CSV file."""
+    return pd.read_csv(filepath)
+
+def check_duplicates(df):
+    """Check and report number of duplicate rows."""
+    duplicates = df.duplicated().sum()
+    print(f"Number of duplicate rows: {duplicates}")
+    return duplicates
+
+def remove_duplicates(df):
+    """Remove duplicate rows from the DataFrame."""
+    df_cleaned = df.drop_duplicates()
+    print(f"Data shape after removing duplicates: {df_cleaned.shape}")
+    return df_cleaned
+
+def check_data_types(df):
+    """Check and print data types of each column."""
+    print("Data types of columns:")
+    print(df.dtypes)
+
+def check_value_ranges(df, column_ranges={}):
+    """
+    Check for out-of-range values based on expected ranges.
+    column_ranges: dict with column name as key and (min, max) tuple as value
+    """
+    for col, (min_val, max_val) in column_ranges.items():
+        outliers = df[(df[col] < min_val) | (df[col] > max_val)]
+        print(f"{col}: {len(outliers)} out-of-range values")
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update if needed
+    df = load_data(file_path)
+
+    print("Initial shape:", df.shape)
+    check_duplicates(df)
+    df = remove_duplicates(df)
+    
+    check_data_types(df)
+
+    # Optional: define expected ranges for sanity checks (update these if needed)
+    expected_ranges = {
+        "Amount": (0, 10000),  # Example range, update based on dataset
+    }
+    check_value_ranges(df, expected_ranges)
