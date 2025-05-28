@@ -1,0 +1,45 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectKBest, f_classif
+
+def load_data(filepath):
+    """Load the dataset from a CSV file."""
+    return pd.read_csv(filepath)
+
+def feature_scaling(df, features):
+    """Scale selected numerical features using StandardScaler."""
+    scaler = StandardScaler()
+    df[features] = scaler.fit_transform(df[features])
+    return df
+
+def select_features(X, y, k=10):
+    """
+    Select top k features using ANOVA F-test.
+    
+    Returns:
+        - DataFrame of selected features
+        - List of selected feature names
+    """
+    selector = SelectKBest(score_func=f_classif, k=k)
+    X_new = selector.fit_transform(X, y)
+    selected_features = X.columns[selector.get_support()]
+    return pd.DataFrame(X_new, columns=selected_features), list(selected_features)
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update this if needed
+    df = load_data(file_path)
+
+    # Assume 'Class' is the target and all others are features
+    X = df.drop('Class', axis=1)
+    y = df['Class']
+
+    print("\nPerforming feature scaling...")
+    numerical_cols = X.select_dtypes(include='number').columns.tolist()
+    X_scaled = feature_scaling(X.copy(), numerical_cols)
+
+    print("Selecting top 10 features...")
+    X_selected, selected = select_features(X_scaled, y)
+    
+    print("Selected features:")
+    print(selected)
