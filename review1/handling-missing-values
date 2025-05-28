@@ -1,1 +1,47 @@
 
+import pandas as pd
+
+def load_data(filepath):
+    """Load dataset from a CSV file."""
+    return pd.read_csv(filepath)
+
+def check_missing_values(df):
+    """Display count of missing values per column."""
+    missing = df.isnull().sum()
+    print("Missing values per column:\n", missing)
+    return missing
+
+def handle_missing(df, strategy='drop', fill_value=None):
+    """
+    Handle missing values in the DataFrame.
+
+    strategy: 'drop', 'mean', 'median', 'mode', or 'fill'
+    fill_value: Custom value to fill (used only if strategy='fill')
+    """
+    if strategy == 'drop':
+        df_cleaned = df.dropna()
+    elif strategy == 'mean':
+        df_cleaned = df.fillna(df.mean())
+    elif strategy == 'median':
+        df_cleaned = df.fillna(df.median())
+    elif strategy == 'mode':
+        df_cleaned = df.fillna(df.mode().iloc[0])
+    elif strategy == 'fill' and fill_value is not None:
+        df_cleaned = df.fillna(fill_value)
+    else:
+        raise ValueError("Invalid strategy or missing fill_value")
+    
+    return df_cleaned
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update this if needed
+    df = load_data(file_path)
+    
+    print("Before handling missing values:")
+    check_missing_values(df)
+
+    df_cleaned = handle_missing(df, strategy='mean')  # You can change strategy here
+    
+    print("\nAfter handling missing values:")
+    check_missing_values(df_cleaned)
