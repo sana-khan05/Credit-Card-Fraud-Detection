@@ -1,0 +1,52 @@
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+
+def load_data(filepath):
+    """Load dataset from CSV."""
+    return pd.read_csv(filepath)
+
+def label_encode_column(df, column):
+    """Apply label encoding to a single categorical column."""
+    le = LabelEncoder()
+    df[column] = le.fit_transform(df[column])
+    print(f"Label encoded column: {column}")
+    return df
+
+def one_hot_encode(df, columns):
+    """
+    Apply one-hot encoding to specified columns.
+    
+    Returns:
+        - Encoded DataFrame
+    """
+    ohe = OneHotEncoder(sparse=False, drop='first')
+    encoded_data = ohe.fit_transform(df[columns])
+    encoded_df = pd.DataFrame(encoded_data, columns=ohe.get_feature_names_out(columns))
+    df = df.drop(columns=columns).reset_index(drop=True)
+    df_encoded = pd.concat([df, encoded_df], axis=1)
+    print(f"One-hot encoded columns: {columns}")
+    return df_encoded
+
+def format_data_types(df):
+    """Ensure correct data types for numerical and categorical features."""
+    for col in df.columns:
+        if df[col].dtype == 'object':
+            df[col] = df[col].astype('category')
+    print("Formatted object columns to categorical.")
+    return df
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update if needed
+    df = load_data(file_path)
+
+    # Example: label encode if 'Category' column exists
+    if 'Category' in df.columns:
+        df = label_encode_column(df, 'Category')
+
+    # Example: one-hot encode if 'Type' column exists
+    categorical_cols = ['Type'] if 'Type' in df.columns else []
+    if categorical_cols:
+        df = one_hot_encode(df, categorical_cols)
+
+    df = format_data_types(df)
