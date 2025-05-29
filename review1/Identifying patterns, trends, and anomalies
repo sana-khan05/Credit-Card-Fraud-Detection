@@ -1,0 +1,41 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def load_data(filepath):
+    """Load the dataset from a CSV file."""
+    return pd.read_csv(filepath)
+
+def plot_class_distribution(df, target_col='Class'):
+    """Plot distribution of fraud vs non-fraud classes."""
+    sns.countplot(data=df, x=target_col)
+    plt.title("Class Distribution")
+    plt.xlabel("Class (0 = Non-Fraud, 1 = Fraud)")
+    plt.ylabel("Count")
+    plt.show()
+
+def plot_feature_trends(df, feature, target_col='Class'):
+    """Plot distribution of a numerical feature by class."""
+    sns.histplot(data=df, x=feature, hue=target_col, bins=50, kde=True, element="step", stat="density", common_norm=False)
+    plt.title(f"{feature} Distribution by Class")
+    plt.xlabel(feature)
+    plt.ylabel("Density")
+    plt.show()
+
+def detect_anomalies(df, z_thresh=3):
+    """Detect anomalies using Z-score threshold method."""
+    from scipy.stats import zscore
+    numeric_df = df.select_dtypes(include='number')
+    z_scores = numeric_df.apply(zscore)
+    outliers = (z_scores.abs() > z_thresh).sum()
+    print(f"\nNumber of outliers in each column (Z > {z_thresh}):")
+    print(outliers)
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update if needed
+    df = load_data(file_path)
+
+    plot_class_distribution(df)
+    plot_feature_trends(df, 'Amount', target_col='Class')  # Can change feature to 'Time' or 'V1', etc.
+    detect_anomalies(df)
