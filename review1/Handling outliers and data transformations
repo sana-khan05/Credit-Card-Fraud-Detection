@@ -1,0 +1,57 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def load_data(filepath):
+    """Load dataset from CSV."""
+    return pd.read_csv(filepath)
+
+def handle_outliers_iqr(df, column):
+    """
+    Handle outliers using the IQR method.
+
+    Returns: 
+        - DataFrame with outliers removed
+        - Count of removed rows
+    """
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    original_shape = df.shape[0]
+    df_filtered = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+    removed = original_shape - df_filtered.shape[0]
+    print(f"{removed} outliers removed from '{column}' using IQR.")
+    return df_filtered, removed
+
+def log_transform(df, column):
+    """Apply log transformation to skewed numerical feature."""
+    df[f'{column}_log'] = np.log1p(df[column])
+    print(f"Log transformation applied to '{column}'.")
+    return df
+
+def plot_transformation(df, original_col, transformed_col):
+    """Plot original vs log-transformed distribution."""
+    fig, axs = plt.subplots(1, 2, figsize=(12, 5))
+    sns.histplot(df[original_col], bins=50, kde=True, ax=axs[0])
+    axs[0].set_title(f"Original {original_col}")
+    sns.histplot(df[transformed_col], bins=50, kde=True, ax=axs[1])
+    axs[1].set_title(f"Transformed {transformed_col}")
+    plt.tight_layout()
+    plt.show()
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update if needed
+    df = load_data(file_path)
+
+    # Handle outliers in the 'Amount' column
+    df_clean, _ = handle_outliers_iqr(df, 'Amount')
+
+    # Apply log transformation
+    df_transformed = log_transform(df_clean, 'Amount')
+
+    # Plot before and after transformation
+    plot_transformation(df_transformed, 'Amount', 'Amount_log')
