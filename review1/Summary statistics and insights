@@ -1,0 +1,43 @@
+import pandas as pd
+
+def load_data(filepath):
+    """Load dataset from CSV file."""
+    return pd.read_csv(filepath)
+
+def dataset_overview(df):
+    """Print basic information about the dataset."""
+    print("Dataset Info:")
+    print(df.info())
+    print("\nFirst 5 rows:")
+    print(df.head())
+
+def summary_statistics(df):
+    """Display summary statistics for numerical columns."""
+    print("\nSummary Statistics:")
+    print(df.describe())
+
+def class_distribution(df, target_col='Class'):
+    """Show the distribution of classes in the target column."""
+    print(f"\nClass Distribution in '{target_col}':")
+    print(df[target_col].value_counts())
+    print("\nClass Distribution (%):")
+    print(df[target_col].value_counts(normalize=True) * 100)
+
+def correlation_matrix(df):
+    """Compute and display correlation matrix."""
+    print("\nCorrelation Matrix (Top Correlations with Target):")
+    corr = df.corr()
+    if 'Class' in corr.columns:
+        print(corr['Class'].sort_values(ascending=False))
+    else:
+        print(corr)
+
+# Example usage
+if __name__ == "__main__":
+    file_path = "creditcard.csv"  # Update path if needed
+    df = load_data(file_path)
+
+    dataset_overview(df)
+    summary_statistics(df)
+    class_distribution(df, target_col='Class')
+    correlation_matrix(df)
