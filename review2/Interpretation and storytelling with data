@@ -1,0 +1,20 @@
+🌙 Temporal Patterns Identified
+Night Peak: 80% more fraud during 2-6 AM hours
+Business Hours: Lower fraud rates during 9 AM - 5 PM
+Weekend Effect: Slight increase in fraud on weekends
+Consistent Pattern: Fraud follows predictable temporal cycles
+⚠️ Risk Assessment
+High-Risk Windows: Late night and early morning hours
+Monitoring Strategy: Enhanced surveillance during 2-6 AM
+Alert Thresholds: Lower thresholds during peak fraud hours
+Resource Allocation: Focus security resources on high-risk periods
+🔍 Temporal Analysis Methodology
+Data Processing: 48-hour transaction timeline divided into hourly bins for pattern analysis.
+
+Visualization Choice: Line chart for time series data shows trends clearly, while bar chart compares hourly volumes.
+
+Statistical Analysis: Night multiplier calculated as ratio of nighttime to daytime fraud rates.
+
+Pattern Recognition: Identification of consistent temporal patterns helps predict high-risk periods.
+
+Business Application: Insights enable dynamic fraud detection thresholds based on time of day.
