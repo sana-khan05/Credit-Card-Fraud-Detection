@@ -1,0 +1,410 @@
+import React, { useState, useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ScatterPlot, Scatter, ResponsiveContainer, AreaChart, Area, RadialBarChart, RadialBar } from 'recharts';
+
+const CreditCardFraudVisualization = () => {
+  // Sample data structure similar to credit card fraud datasets
+  const [selectedTab, setSelectedTab] = useState('overview');
+
+  // Generate sample data for demonstration
+  const generateSampleData = () => {
+    const fraudData = [];
+    const timeData = [];
+    const amountData = [];
+    
+    // Class distribution data
+    const classDistribution = [
+      { name: 'Normal Transactions', value: 284315, percentage: 99.83 },
+      { name: 'Fraudulent Transactions', value: 492, percentage: 0.17 }
+    ];
+
+    // Transaction amount distribution
+    for (let i = 0; i < 50; i++) {
+      amountData.push({
+        range: `${i * 100}-${(i + 1) * 100}`,
+        normal: Math.floor(Math.random() * 5000 + 1000),
+        fraud: Math.floor(Math.random() * 50 + 5),
+        amount: i * 100
+      });
+    }
+
+    // Time-based fraud pattern
+    for (let hour = 0; hour < 24; hour++) {
+      timeData.push({
+        hour: hour,
+        normalTransactions: Math.floor(Math.random() * 2000 + 500),
+        fraudTransactions: Math.floor(Math.random() * 20 + 2),
+        fraudRate: (Math.floor(Math.random() * 20 + 2) / (Math.floor(Math.random() * 2000 + 500) + Math.floor(Math.random() * 20 + 2)) * 100).toFixed(2)
+      });
+    }
+
+    // Feature correlation data (V1-V28 PCA components)
+    const featureData = [];
+    for (let i = 1; i <= 28; i++) {
+      featureData.push({
+        feature: `V${i}`,
+        correlation: (Math.random() - 0.5) * 2,
+        importance: Math.random()
+      });
+    }
+
+    return { classDistribution, amountData, timeData, featureData };
+  };
+
+  const { classDistribution, amountData, timeData, featureData } = useMemo(() => generateSampleData(), []);
+
+  const COLORS = ['#0088FE', '#FF6B6B', '#00C49F', '#FFBB28', '#FF8042'];
+
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'distribution', label: 'Class Distribution' },
+    { id: 'amount', label: 'Amount Analysis' },
+    { id: 'time', label: 'Time Patterns' },
+    { id: 'features', label: 'Feature Analysis' }
+  ];
+
+  const renderOverview = () => (
+    <div className="space-y-6">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Dataset Overview</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-gray-600">Total Transactions</h4>
+            <p className="text-2xl font-bold text-blue-600">284,807</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-gray-600">Fraudulent</h4>
+            <p className="text-2xl font-bold text-red-600">492</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-gray-600">Fraud Rate</h4>
+            <p className="text-2xl font-bold text-orange-600">0.17%</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h4 className="font-semibold text-gray-600">Features</h4>
+            <p className="text-2xl font-bold text-green-600">30</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Class Imbalance</h4>
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Pie
+                data={classDistribution}
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+                label={({ name, percentage }) => `${name}: ${percentage}%`}
+              >
+                {classDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => [value.toLocaleString(), 'Transactions']} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Fraud Rate by Hour</h4>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={timeData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="hour" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="fraudRate" stroke="#FF6B6B" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderClassDistribution = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Transaction Distribution</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={classDistribution}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip formatter={(value) => [value.toLocaleString(), 'Count']} />
+              <Bar dataKey="value" fill="#0088FE" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Class Distribution (Donut Chart)</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={classDistribution}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={120}
+                fill="#8884d8"
+                dataKey="value"
+                label={({ percentage }) => `${percentage}%`}
+              >
+                {classDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => [value.toLocaleString(), 'Transactions']} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h4 className="text-lg font-semibold mb-4">Class Imbalance Metrics</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Imbalance Ratio</p>
+            <p className="text-xl font-bold text-red-600">1:578</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Normal %</p>
+            <p className="text-xl font-bold text-blue-600">99.83%</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Fraud %</p>
+            <p className="text-xl font-bold text-red-600">0.17%</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">Total Records</p>
+            <p className="text-xl font-bold text-green-600">284,807</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAmountAnalysis = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h4 className="text-lg font-semibold mb-4">Transaction Amount Distribution</h4>
+        <ResponsiveContainer width="100%" height={400}>
+          <AreaChart data={amountData.slice(0, 20)}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="range" />
+            <YAxis />
+            <Tooltip />
+            <Area type="monotone" dataKey="normal" stackId="1" stroke="#0088FE" fill="#0088FE" />
+            <Area type="monotone" dataKey="fraud" stackId="1" stroke="#FF6B6B" fill="#FF6B6B" />
+            <Legend />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Amount vs Fraud Rate</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <ScatterPlot
+              data={amountData.slice(0, 30).map(d => ({
+                amount: d.amount,
+                fraudRate: (d.fraud / (d.normal + d.fraud) * 100).toFixed(2)
+              }))}
+            >
+              <CartesianGrid />
+              <XAxis dataKey="amount" name="Amount" />
+              <YAxis dataKey="fraudRate" name="Fraud Rate %" />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+              <Scatter name="Fraud Rate" fill="#FF6B6B" />
+            </ScatterPlot>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Amount Statistics</h4>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+              <span className="font-medium">Average Normal Transaction</span>
+              <span className="text-blue-600 font-bold">$88.35</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+              <span className="font-medium">Average Fraud Transaction</span>
+              <span className="text-red-600 font-bold">$122.21</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+              <span className="font-medium">Max Transaction Amount</span>
+              <span className="text-green-600 font-bold">$25,691.16</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+              <span className="font-medium">Median Normal</span>
+              <span className="text-blue-600 font-bold">$22.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTimePatterns = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h4 className="text-lg font-semibold mb-4">Transactions by Hour of Day</h4>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={timeData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="hour" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="normalTransactions" fill="#0088FE" name="Normal Transactions" />
+            <Bar dataKey="fraudTransactions" fill="#FF6B6B" name="Fraud Transactions" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Fraud Rate Throughout Day</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={timeData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="hour" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="fraudRate" stroke="#FF6B6B" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Time-based Insights</h4>
+          <div className="space-y-3">
+            <div className="p-3 bg-red-50 border-l-4 border-red-400 rounded">
+              <p className="text-sm font-medium text-red-800">Peak Fraud Hours</p>
+              <p className="text-xs text-red-600">2:00 AM - 4:00 AM</p>
+            </div>
+            <div className="p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+              <p className="text-sm font-medium text-blue-800">Peak Transaction Hours</p>
+              <p className="text-xs text-blue-600">9:00 AM - 11:00 AM, 2:00 PM - 4:00 PM</p>
+            </div>
+            <div className="p-3 bg-green-50 border-l-4 border-green-400 rounded">
+              <p className="text-sm font-medium text-green-800">Safest Hours</p>
+              <p className="text-xs text-green-600">6:00 AM - 8:00 AM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderFeatureAnalysis = () => (
+    <div className="space-y-6">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h4 className="text-lg font-semibold mb-4">Feature Correlation with Fraud</h4>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={featureData} layout="horizontal">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" domain={[-1, 1]} />
+            <YAxis dataKey="feature" type="category" width={50} />
+            <Tooltip />
+            <Bar dataKey="correlation" fill={(entry) => entry > 0 ? "#FF6B6B" : "#0088FE"} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Feature Importance</h4>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={featureData.slice(0, 10)}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="feature" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="importance" fill="#00C49F" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h4 className="text-lg font-semibold mb-4">Key Findings</h4>
+          <div className="space-y-3">
+            <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+              <p className="text-sm font-medium text-yellow-800">Highly Correlated Features</p>
+              <p className="text-xs text-yellow-600">V14, V4, V11, V2 show strong correlation with fraud</p>
+            </div>
+            <div className="p-3 bg-purple-50 border-l-4 border-purple-400 rounded">
+              <p className="text-sm font-medium text-purple-800">PCA Components</p>
+              <p className="text-xs text-purple-600">28 anonymized features (V1-V28) from PCA transformation</p>
+            </div>
+            <div className="p-3 bg-indigo-50 border-l-4 border-indigo-400 rounded">
+              <p className="text-sm font-medium text-indigo-800">Original Features</p>
+              <p className="text-xs text-indigo-600">Time and Amount are the only non-PCA features</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (selectedTab) {
+      case 'overview': return renderOverview();
+      case 'distribution': return renderClassDistribution();
+      case 'amount': return renderAmountAnalysis();
+      case 'time': return renderTimePatterns();
+      case 'features': return renderFeatureAnalysis();
+      default: return renderOverview();
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Credit Card Fraud Detection</h1>
+          <p className="text-gray-600">Comprehensive Data Analysis and Visualization Dashboard</p>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedTab(tab.id)}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    selectedTab === tab.id
+                      ? 'border-indigo-500 text-indigo-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Content */}
+        {renderContent()}
+
+        {/* Footer */}
+        <div className="mt-12 text-center text-gray-500 text-sm">
+          <p>Credit Card Fraud Detection Analysis Dashboard</p>
+          <p>Built with React and Recharts for data visualization</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CreditCardFraudVisualization;
