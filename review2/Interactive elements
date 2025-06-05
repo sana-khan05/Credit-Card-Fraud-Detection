@@ -1,0 +1,171 @@
+// Model Performance Metrics
+            const metricsCtx = document.getElementById('metricsChart').getContext('2d');
+            new Chart(metricsCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Precision', 'Recall', 'F1-Score', 'Accuracy', 'AUC'],
+                    datasets: [{
+                        label: 'Model Performance',
+                        data: [
+                            data.modelMetrics.precision,
+                            data.modelMetrics.recall,
+                            data.modelMetrics.f1Score,
+                            data.modelMetrics.accuracy,
+                            data.modelMetrics.auc
+                        ],
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderColor: '#667eea',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { font: { size: 14 } }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                stepSize: 0.2,
+                                font: { size: 12 }
+                            },
+                            pointLabels: {
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // D3.js Correlation Heatmap
+        function createHeatmap() {
+            const svg = d3.select("#heatmapChart");
+            const container = document.querySelector('.heatmap-container .chart-container');
+            const margin = { top: 50, right: 50, bottom: 100, left: 100 };
+            const width = container.clientWidth - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            svg.selectAll("*").remove(); // Clear previous content
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create feature labels
+            const features = [];
+            for (let i = 1; i <= 28; i++) {
+                features.push(`V${i}`);
+            }
+            features.push('Time', 'Amount');
+
+            // Create scales
+            const x = d3.scaleBand().range([0, width]).domain(features).padding(0.01);
+            const y = d3.scaleBand().range([height, 0]).domain(features).padding(0.01);
+            const colorScale = d3.scaleSequential(d3.interpolateRdYlBu).domain([1, -1]);
+
+            // Create tooltip
+            const tooltip = d3.select("#tooltip");
+
+            // Create heatmap squares
+            const heatmapData = [];
+            for (let i = 0; i < features.length; i++) {
+                for (let j = 0; j < features.length; j++) {
+                    heatmapData.push({
+                        x: features[j],
+                        y: features[i],
+                        value: data.correlationMatrix[i][j]
+                    });
+                }
+            }
+
+            g.selectAll(".heatmap-square")
+                .data(heatmapData)
+                .enter().append("rect")
+                .attr("class", "heatmap-square")
+                .attr("x", d => x(d.x))
+                .attr("y", d => y(d.y))
+                .attr("width", x.bandwidth())
+                .attr("height", y.bandwidth())
+                .style("fill", d => colorScale(d.value))
+                .on("mouseover", function(event, d) {
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(`${d.y} vs ${d.x}<br/>Correlation: ${d.value.toFixed(3)}`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d) {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+            // Add X axis
+            g.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-45)")
+                .style("font-size", "10px");
+
+            // Add Y axis
+            g.append("g")
+                .call(d3.axisLeft(y))
+                .selectAll("text")
+                .style("font-size", "10px");
+
+            // Add axis labels
+            g.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Features");
+
+            g.append("text")
+                .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 10})`)
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Features");
+        }
+
+        // Initialize all visualizations
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            createHeatmap();
+
+            // Add event listeners for controls
+            document.getElementById('timeRange').addEventListener('change', function() {
+                console.log('Time range filter changed:', this.value);
+                // In a real application, this would filter and update the charts
+            });
+
+            document.getElementById('amountFilter').addEventListener('change', function() {
+                console.log('Amount filter changed:', this.value);
+                // In a real application, this would filter and update the charts
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                setTimeout(() => {
+                    createHeatmap();
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
