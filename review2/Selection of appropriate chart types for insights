@@ -1,0 +1,66 @@
+Here are some insightful charts we can create based on the data in your credit card fraud detection data:
+
+Bar Chart – Compare number of fraud vs. non-fraud transactions
+📊 sns.countplot(data=df, x='Class')
+
+Histogram – Show distribution of transaction amounts
+📊 df['Amount'].hist(bins=50)
+
+Box Plot – Highlight amount outliers between fraud and non-fraud
+📊 sns.boxplot(x='Class', y='Amount', data=df)
+
+Correlation Heatmap – Visualize feature correlations
+📊 sns.heatmap(df.corr(), cmap='coolwarm')
+
+Time Series Line Plot – Trend of transactions over time
+📊 df.groupby('Time')['Amount'].sum().plot()
+
+1. Class Distribution (Fraud vs Non-Fraud)
+python
+Copy
+Edit
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.countplot(data=df, x='Class', palette='Set2')
+plt.title('Transaction Class Distribution')
+plt.xlabel('Class (0 = Non-Fraud, 1 = Fraud)')
+plt.ylabel('Count')
+plt.show()
+2. Transaction Amount Distribution
+python
+Copy
+Edit
+df['Amount'].hist(bins=50, color='skyblue')
+plt.title('Distribution of Transaction Amount')
+plt.xlabel('Amount')
+plt.ylabel('Frequency')
+plt.show()
+3. Boxplot of Amount by Class
+python
+Copy
+Edit
+sns.boxplot(x='Class', y='Amount', data=df, palette='coolwarm')
+plt.title('Transaction Amount by Class')
+plt.xlabel('Class (0 = Non-Fraud, 1 = Fraud)')
+plt.ylabel('Amount')
+plt.show()
+4. Correlation Heatmap
+python
+Copy
+Edit
+import seaborn as sns
+
+plt.figure(figsize=(12, 9))
+sns.heatmap(df.corr(), cmap='coolwarm', linewidths=0.5)
+plt.title('Correlation Matrix')
+plt.show()
+5. Line Plot – Total Amount Over Time
+python
+Copy
+Edit
+df.groupby('Time')['Amount'].sum().plot(figsize=(12, 5))
+plt.title('Total Transaction Amount Over Time')
+plt.xlabel('Time (seconds)')
+plt.ylabel('Amount')
+plt.show()
