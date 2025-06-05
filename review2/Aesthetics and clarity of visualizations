@@ -1,0 +1,55 @@
+ <!-- Visualizations -->
+        <div class="viz-container">
+            <!-- Class Distribution Pie Chart -->
+            <div class="viz-card">
+                <h3 class="viz-title">Transaction Class Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="classDistChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Time Series Analysis -->
+            <div class="viz-card">
+                <h3 class="viz-title">Fraud Transactions Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="timeSeriesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Amount Distribution -->
+            <div class="viz-card">
+                <h3 class="viz-title">Transaction Amount Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="amountDistChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Transaction Volume by Hour -->
+            <div class="viz-card">
+                <h3 class="viz-title">Transaction Volume by Hour of Day</h3>
+                <div class="chart-container">
+                    <canvas id="hourlyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Feature Correlation Heatmap -->
+            <div class="viz-card heatmap-container">
+                <h3 class="viz-title">Principal Component Analysis - Feature Correlation Heatmap</h3>
+                <div class="chart-container" style="height: 500px;">
+                    <svg id="heatmapChart" class="d3-chart"></svg>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #d73027;"></div>
+                        <span>Strong Positive Correlation</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffffbf;"></div>
+                        <span>No Correlation</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #313695;"></div>
+                        <span>Strong Negative Correlation</span>
+                    </div>
+                </div>
+            </div>
