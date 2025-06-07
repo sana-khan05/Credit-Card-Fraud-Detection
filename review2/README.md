@@ -374,11 +374,7 @@ CONFIG = {
 ## 📞 Support and Contact
 
 For questions, issues, or contributions:
-- **Email**: [your-email@domain.com]
-- **GitHub Issues**: [Repository Issues Link]
-- **Documentation**: [Project Wiki Link]
-
----
+- **Email**: [mis.sanakhanam05@gmail.com]
 
 ## 📄 License
 
@@ -392,7 +388,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Libraries**: Thanks to the open-source visualization community
 - **Inspiration**: Financial fraud detection research papers
 
----
-
-*Last Updated: [Current Date]*
-*Version: 1.0.0*
